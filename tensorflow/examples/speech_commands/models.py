@@ -204,6 +204,7 @@ def create_single_fc_model(fingerprint_input, model_settings, is_training):
     return logits
 
 
+# Checking if Leaky Relu improves performance
 def create_conv_model(fingerprint_input, model_settings, is_training):
   """Builds a standard convolutional model.
 
@@ -219,7 +220,7 @@ def create_conv_model(fingerprint_input, model_settings, is_training):
           v
       [BiasAdd]<-(bias)
           v
-        [Relu]
+        [Leaky-Relu]
           v
       [MaxPool]
           v
@@ -227,7 +228,7 @@ def create_conv_model(fingerprint_input, model_settings, is_training):
           v
       [BiasAdd]<-(bias)
           v
-        [Relu]
+        [Leaky-Relu]
           v
       [MaxPool]
           v
@@ -274,7 +275,7 @@ def create_conv_model(fingerprint_input, model_settings, is_training):
                             filters=first_weights,
                             strides=[1, 1, 1, 1],
                             padding='SAME') + first_bias
-  first_relu = tf.nn.relu(first_conv)
+  first_relu = tf.nn.leaky_relu(first_conv)
   if is_training:
     first_dropout = tf.nn.dropout(first_relu, rate=dropout_rate)
   else:
@@ -301,7 +302,7 @@ def create_conv_model(fingerprint_input, model_settings, is_training):
                              filters=second_weights,
                              strides=[1, 1, 1, 1],
                              padding='SAME') + second_bias
-  second_relu = tf.nn.relu(second_conv)
+  second_relu = tf.nn.leaky_relu(second_conv)
   if is_training:
     second_dropout = tf.nn.dropout(second_relu, rate=dropout_rate)
   else:
@@ -346,7 +347,7 @@ def create_low_latency_conv_model(fingerprint_input, model_settings,
           v
       [BiasAdd]<-(bias)
           v
-        [Relu]
+        [Leaky Relu]
           v
       [MatMul]<-(weights)
           v
@@ -400,7 +401,7 @@ def create_low_latency_conv_model(fingerprint_input, model_settings,
       filters=first_weights,
       strides=[1, first_filter_stride_y, first_filter_stride_x, 1],
       padding='VALID') + first_bias
-  first_relu = tf.nn.relu(first_conv)
+  first_relu = tf.nn.leaky_relu(first_conv)
   if is_training:
     first_dropout = tf.nn.dropout(first_relu, rate=dropout_rate)
   else:
